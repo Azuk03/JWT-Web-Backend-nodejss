@@ -2,7 +2,7 @@ import userApiService from "../service/userApiService";
 
 const readFunc = async (req, res) => {
   try {
-    if(req.query.page && req.query.limit) {
+    if (req.query.page && req.query.limit) {
       let page = req.query.page;
       let limit = req.query.limit;
 
@@ -14,11 +14,11 @@ const readFunc = async (req, res) => {
       });
     } else {
       let data = await userApiService.getAllUser();
-    return res.status(200).json({
-      EM: data.EM,
-      EC: data.EC,
-      DT: data.DT,
-    });
+      return res.status(200).json({
+        EM: data.EM,
+        EC: data.EC,
+        DT: data.DT,
+      });
     }
   } catch (error) {
     console.log(error);
@@ -33,11 +33,11 @@ const readFunc = async (req, res) => {
 const createFunc = async (req, res) => {
   try {
     let data = await userApiService.createNewUser(req.body);
-      return res.status(200).json({
-        EM: data.EM,
-        EC: data.EC,
-        DT: data.DT,
-      });
+    return res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -51,11 +51,11 @@ const createFunc = async (req, res) => {
 const updateFunc = async (req, res) => {
   try {
     let data = await userApiService.updateUser(req.body);
-      return res.status(200).json({
-        EM: data.EM,
-        EC: data.EC,
-        DT: data.DT,
-      });
+    return res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -84,9 +84,41 @@ const deleteFunc = async (req, res) => {
   }
 };
 
+const getUserAccount = async (req, res) => {
+  try {
+    if (!req.user) {
+      console.log("req.user is undefined in getUserAccount");
+      return res.status(401).json({
+        EM: "Not authenticated - User information missing",
+        EC: "-1",
+        DT: "",
+      });
+    }
+
+    return res.status(200).json({
+      EM: "Ok!",
+      EC: 0,
+      DT: {
+        access_token: req.token,
+        groupWithRoles: req.user.groupWithRoles,
+        email: req.user.email,
+        username: req.user.username,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "Error from server",
+      EC: "-1",
+      DT: "",
+    });
+  }
+};
+
 module.exports = {
   readFunc,
   createFunc,
   updateFunc,
   deleteFunc,
+  getUserAccount,
 };

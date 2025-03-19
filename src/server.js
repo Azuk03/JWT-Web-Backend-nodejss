@@ -6,6 +6,8 @@ require("dotenv").config();
 import bodyParser from "body-parser";
 import connection from "./config/connectDB";
 import configCors from "./config/cors";
+import cookieParser from "cookie-parser";
+
 
 
 
@@ -19,8 +21,11 @@ configViewEngine(app);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));;
 
+app.use(cookieParser());
+
 // test connection
 // connection();
+
 
 initWebRoutes(app);
 initApiRoutes(app);

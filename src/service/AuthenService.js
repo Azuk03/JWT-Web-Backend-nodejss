@@ -3,6 +3,8 @@ import db from "../models/index";
 import bcrypt from "bcryptjs";
 import { Op } from "sequelize";
 import { raw } from "body-parser";
+import {getGroupWithRoles } from "../service/JWTService";
+import {createJWT } from "../middleware/JWTAction";
 
 const salt = bcrypt.genSaltSync(10);
 
@@ -60,6 +62,7 @@ const registerNewUser = async (rawUserData) => {
       username: rawUserData.username,
       password: hashPassword,
       phone: rawUserData.phone,
+      groupId: 4,
     });
 
     return {
@@ -81,8 +84,6 @@ const checkPassword = (inputPassword, hashPassword) => {
 
 const handleUserLogin = async (rawData) => {
   try {
-    // let isEmailExist = await checkEmailExist(rawUserData.email);
-    // let isPhoneExist = await checkPhoneExist(rawUserData.phone);
     let user = await db.User.findOne({
       where: {
         [Op.or]: [
@@ -95,14 +96,26 @@ const handleUserLogin = async (rawData) => {
       console.log("Found user with email/phone");
       let isCorrectPassword = checkPassword(rawData.password, user.password);
       if(isCorrectPassword === true) {
+
+        let groupWithRoles = await getGroupWithRoles(user);
+        let payload = {
+          email: user.email,
+          username: user.username,
+          groupWithRoles,
+        }
+        let token = createJWT(payload);
         return {
           EM: "Ok!",
           EC: 0,
-          DT: ''
+          DT: {
+            access_token: token,
+            groupWithRoles,
+            email: user.email,
+            username: user.username,
+          }
         };
       }
     }
-      console.log("Input user with email/phone: ", rawData.valueLogin, "password: ", rawData.password);
       return {
         EM: " Your Email/phone number or password is incorrect!",
         EC: 1,

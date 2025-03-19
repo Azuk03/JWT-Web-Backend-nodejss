@@ -92,26 +92,54 @@ const createNewUser = async (data) => {
         }
     } catch (error) {
         console.log(error);
+        return {
+            EM: 'Error in service',
+            EC: 1,
+            DT: []
+        }
     }
 }
 
 const updateUser = async (data) => {
     try {
+
+        if(!data.groupId) {
+            return {
+                EM: 'Error with empty group',
+                EC: 1,
+                DT: 'group'
+            }
+        }
+
         let user = await db.User.findOne({
             where: {id: data.id}
         })
         if(user) {
-            user.save({              
+            await user.update({         
+                username: data.username,
+                address: data.address,
+                sex: data.sex,
+                groupId: data.groupId     
             })
+            return {
+                EM: 'Update User succeed!',
+                EC: 0,
+                DT: ''
+            }
         } else {
             return {
                 EM: 'Cannot find User',
-                EC: 1,
-                DT: []
+                EC: 2,
+                DT: ''
             }
         }
     } catch (error) {
         console.log(error);
+        return {
+            EM: 'Error in service',
+            EC: 1,
+            DT: []
+        }
     }
 }
 
