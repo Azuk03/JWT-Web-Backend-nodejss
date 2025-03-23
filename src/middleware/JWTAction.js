@@ -88,7 +88,7 @@ const checkUserPermission = (req, res, next) => {
         DT: "",
       });
     }
-    let canAccess = roles.some((role) => role.url === currentURL);
+    let canAccess = roles.some((role) => role.url === currentURL || currentURL.includes(role.url));
     if (!canAccess) {
       return res.status(403).json({
         EM: "You are not authorized to access this resource",

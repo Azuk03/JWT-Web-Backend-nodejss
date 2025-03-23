@@ -102,7 +102,6 @@ const createNewUser = async (data) => {
 
 const updateUser = async (data) => {
     try {
-
         if(!data.groupId) {
             return {
                 EM: 'Error with empty group',
